@@ -441,7 +441,7 @@ This project is created as an assignment submission. Code is available for revie
 
 For questions about this assignment submission:
 
-**Email**: [your.email@example.com]  
+**Email**: [sujithmv03@gmail.com]  
 **GitHub Issues**: [Report a bug or suggest improvement](https://github.com/mvsujith/Healthcare-Symptom-Checker/issues)
 
 ---
@@ -451,3 +451,4 @@ For questions about this assignment submission:
 ---
 
 **Thank you for reviewing this assignment submission!** 🚀
+
