@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables (IMPORTANT - Contains API Keys!)
+.env
+.env.local
+.env.production
+.env.development
+
+# Build outputs
+dist/
+build/
+*.log
+logs/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Backend specific
+backend/node_modules/
+backend/logs/
+backend/uploads/
+backend/package-lock.json
+
+# Frontend specific
+src/node_modules/
+.vite/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

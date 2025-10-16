@@ -1,0 +1,28 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  color-scheme: dark;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+  color: #e2e8f0;
+}
+
+/* Force dark theme for select dropdowns */
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}

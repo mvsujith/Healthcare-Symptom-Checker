@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sidebar Preview - AI Doctor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    .preview-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .demo-content {
+      text-align: center;
+      z-index: 1;
+    }
+
+    .demo-title {
+      font-size: 3rem;
+      color: #5eead4;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 20px rgba(94, 234, 212, 0.5);
+    }
+
+    .demo-subtitle {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      margin-bottom: 2rem;
+    }
+
+    .demo-instructions {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: rgba(94, 234, 212, 0.1);
+      border: 1px solid rgba(94, 234, 212, 0.3);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      position: fixed;
+      top: 24px;
+      bottom: 24px;
+      width: 320px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(94, 234, 212, 0.3);
+      border-radius: 16px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .sidebar-left {
+      left: 24px;
+    }
+
+    .sidebar-right {
+      right: 24px;
+    }
+
+    .sidebar.minimized {
+      height: 60px;
+      bottom: auto;
+    }
+
+    .sidebar.maximized {
+      width: 480px;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid rgba(94, 234, 212, 0.2);
+      min-height: 60px;
+    }
+
+    .sidebar-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #5eead4;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .sidebar-icon {
+      font-size: 1.2rem;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    .sidebar-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .control-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(94, 234, 212, 0.1);
+      border: 1px solid rgba(94, 234, 212, 0.3);
+      border-radius: 8px;
+      color: #5eead4;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .control-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(94, 234, 212, 0.3);
+    }
+
+    .minimize-btn:hover {
+      background: rgba(251, 191, 36, 0.2);
+      border-color: rgba(251, 191, 36, 0.5);
+      color: #fbbf24;
+    }
+
+    .maximize-btn:hover {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: rgba(34, 197, 94, 0.5);
+      color: #22c55e;
+    }
+
+    .close-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #ef4444;
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .sidebar-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .sidebar-content::-webkit-scrollbar-thumb {
+      background: rgba(94, 234, 212, 0.3);
+      border-radius: 4px;
+    }
+
+    .sidebar-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .sidebar-section-title {
+      color: #5eead4;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(94, 234, 212, 0.2);
+    }
+
+    .sidebar-item {
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(94, 234, 212, 0.2);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .sidebar-item:hover {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(94, 234, 212, 0.4);
+      transform: translateX(4px);
+    }
+
+    .sidebar-item-label {
+      color: #94a3b8;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .sidebar-item-value {
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <div class="demo-content">
+      <h1 class="demo-title">AI Doctor - Sidebar System</h1>
+      <p class="demo-subtitle">Interactive transparent sidebars with window controls</p>
+      <div class="demo-instructions">
+        <p>👈 <strong>Left Sidebar:</strong> Patient History & Data</p>
+        <p>👉 <strong>Right Sidebar:</strong> Analysis Status & Tools</p>
+        <p style="margin-top: 1rem; color: #5eead4;">
+          Try the <span style="color: #fbbf24;">minimize</span>, 
+          <span style="color: #22c55e;">maximize</span>, and 
+          <span style="color: #ef4444;">close</span> buttons!
+        </p>
+      </div>
+    </div>
+
+    <!-- Left Sidebar -->
+    <div class="sidebar sidebar-left" id="leftSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <span class="sidebar-icon">⚡</span>
+          Patient History
+        </div>
+        <div class="sidebar-controls">
+          <button class="control-btn minimize-btn" onclick="toggleMinimize('left')" title="Minimize">−</button>
+          <button class="control-btn maximize-btn" onclick="toggleMaximize('left')" title="Maximize">□</button>
+          <button class="control-btn close-btn" onclick="closeSidebar('left')" title="Close">×</button>
+        </div>
+      </div>
+      <div class="sidebar-content" id="leftContent">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Current Session</div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-label">Gender</div>
+            <div class="sidebar-item-value">Male</div>
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-label">Age</div>
+            <div class="sidebar-item-value">35 years</div>
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-label">Duration</div>
+            <div class="sidebar-item-value">3 days</div>
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-label">Severity</div>
+            <div class="sidebar-item-value">Moderate</div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Symptoms</div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-value">
+              Fever, headache, body aches, and fatigue
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">AI Questions</div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-value">5 questions generated</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="sidebar sidebar-right" id="rightSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <span class="sidebar-icon">⚡</span>
+          Analysis Status
+        </div>
+        <div class="sidebar-controls">
+          <button class="control-btn minimize-btn" onclick="toggleMinimize('right')" title="Minimize">−</button>
+          <button class="control-btn maximize-btn" onclick="toggleMaximize('right')" title="Maximize">□</button>
+          <button class="control-btn close-btn" onclick="closeSidebar('right')" title="Close">×</button>
+        </div>
+      </div>
+      <div class="sidebar-content" id="rightContent">
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Current Stage</div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-label">Status</div>
+            <div class="sidebar-item-value">📝 Awaiting Answers</div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Quick Actions</div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-label">Reset</div>
+            <div class="sidebar-item-value">🔄 Start New Consultation</div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">System Info</div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-label">AI Model</div>
+            <div class="sidebar-item-value">DeepSeek R1</div>
+          </div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-label">Mode</div>
+            <div class="sidebar-item-value">Phase 2: Analysis</div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Response Preview</div>
+          <div class="sidebar-item">
+            <div class="sidebar-item-value" style="font-size: 0.8rem; opacity: 0.8;">
+              Based on the symptoms and answers provided, here are the possible conditions...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleMinimize(side) {
+      const sidebar = document.getElementById(side + 'Sidebar');
+      sidebar.classList.toggle('minimized');
+    }
+
+    function toggleMaximize(side) {
+      const sidebar = document.getElementById(side + 'Sidebar');
+      sidebar.classList.toggle('maximized');
+    }
+
+    function closeSidebar(side) {
+      const sidebar = document.getElementById(side + 'Sidebar');
+      sidebar.classList.add('hidden');
+      alert(`${side} sidebar closed! In the full app, a floating tab will appear to reopen it.`);
+    }
+  </script>
+</body>
+</html>
