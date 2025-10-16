@@ -1,6 +1,6 @@
 # 🏥 Healthcare Symptom Checker - AI-Powered Medical Analysis System
 
-> **Assignment Submission for Software Developer Role**
+> **Assignment Submission**
 
 An advanced healthcare symptom checker that leverages DeepSeek R1 AI to analyze symptoms and provide comprehensive medical insights including probable conditions, risk assessments, and evidence-based recommendations.
 
@@ -451,4 +451,5 @@ For questions about this assignment submission:
 ---
 
 **Thank you for reviewing this assignment submission!** 🚀
+
 
