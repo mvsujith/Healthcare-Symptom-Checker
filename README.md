@@ -1,6 +1,8 @@
 # 🏥 Healthcare Symptom Checker - AI-Powered Medical Analysis System
 
 > **Assignment Submission**
+>
+> **[Watch Project Video](https://drive.google.com/file/d/1VboURzWNDOlasm5j70r1lI4vcRrwbjwX/view?usp=drive_link)**
 
 An advanced healthcare symptom checker that leverages DeepSeek R1 AI to analyze symptoms and provide comprehensive medical insights including probable conditions, risk assessments, and evidence-based recommendations.
 
@@ -440,6 +442,7 @@ This project is created as an assignment submission. Code is available for revie
 For questions about this assignment submission:
 
 **Email**: [sujithmv03@gmail.com]  
+**[Watch Project Video](https://drive.google.com/file/d/1VboURzWNDOlasm5j70r1lI4vcRrwbjwX/view?usp=drive_link)**
 
 ---
 
@@ -448,6 +451,7 @@ For questions about this assignment submission:
 ---
 
 **Thank you for reviewing this assignment submission!** 🚀
+
 
 
 
