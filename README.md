@@ -369,11 +369,9 @@ user safety and recommend consulting healthcare professionals."
 
 ## 🎓 Developer Information
 
-**Candidate**: [Your Name]  
+**Candidate**: [Venkata Sujith Mandiga]  
 **Role**: Software Developer  
-**Email**: [your.email@example.com]  
-**LinkedIn**: [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)  
-**Portfolio**: [yourportfolio.com](https://yourportfolio.com)
+**Email**: [sujithmv03@gmail.com]  
 
 **GitHub**: [mvsujith](https://github.com/mvsujith)  
 **Repository**: [Healthcare-Symptom-Checker](https://github.com/mvsujith/Healthcare-Symptom-Checker)
@@ -442,7 +440,6 @@ This project is created as an assignment submission. Code is available for revie
 For questions about this assignment submission:
 
 **Email**: [sujithmv03@gmail.com]  
-**GitHub Issues**: [Report a bug or suggest improvement](https://github.com/mvsujith/Healthcare-Symptom-Checker/issues)
 
 ---
 
@@ -451,6 +448,7 @@ For questions about this assignment submission:
 ---
 
 **Thank you for reviewing this assignment submission!** 🚀
+
 
 
 
