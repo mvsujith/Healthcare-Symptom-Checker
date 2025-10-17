@@ -155,7 +155,7 @@ npm run dev
 
 ## 🎬 Demo Video
 
-**[Watch Demo Video](https://drive.google.com/file/d/1VboURzWNDOlasm5j70r1lI4vcRrwbjwX/view?usp=sharing)**
+**[Watch Demo Video](https://drive.google.com/file/d/1VboURzWNDOlasm5j70r1lI4vcRrwbjwX/view?usp=drive_link)**
 
 ### Demo Highlights:
 1. ✅ Initial symptom input (neck pain example)
@@ -451,6 +451,7 @@ For questions about this assignment submission:
 ---
 
 **Thank you for reviewing this assignment submission!** 🚀
+
 
 
 
