@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import WorkspacePlane from "./components/WorkspacePlane.jsx";
 import DynamicQuestionForm from "./components/questions/DynamicQuestionForm.jsx";
 import MedicalAnalysisDisplay from "./components/MedicalAnalysisDisplay.jsx";
 import Sidebar from "./components/Sidebar.jsx";
+import ExerciseModel from "./components/ExerciseModel.jsx";
+import TigerWoodsYogaModel from "./components/TigerWoodsYogaModel.jsx";
 import { parseAIAnalysis, normalizeQuestions } from "./utils/aiParser.js";
 import "./App.css";
 
@@ -25,6 +27,22 @@ export default function App() {
   // Sidebar navigation state
   const [selectedSection, setSelectedSection] = useState('probable_conditions');
   const [analysisData, setAnalysisData] = useState(null);
+  
+  // AI Chat state
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+  // Close chat when section changes (to allow viewing models)
+  useEffect(() => {
+    if (showChat) {
+      console.log('📍 Section changed, closing chat to view models');
+      setShowChat(false);
+    }
+  }, [selectedSection]);
 
   // Debug: Log state changes
   console.log('🔄 App State:', {
@@ -473,13 +491,122 @@ Analyze the patient data and generate ONLY in JSON format THAT GIVEN. Do not pro
     setSeverity("");
   };
 
+  // Save current chat session to history
+  const saveChatToHistory = () => {
+    if (chatMessages.length > 0) {
+      const chatSession = {
+        id: Date.now(),
+        timestamp: new Date().toLocaleString(),
+        patientInfo: {
+          gender,
+          age,
+          duration,
+          severity,
+          chiefComplaint: userInput
+        },
+        messages: chatMessages
+      };
+      setChatHistory(prev => [chatSession, ...prev]);
+    }
+  };
+
+  // Load a chat session from history
+  const loadChatFromHistory = (session) => {
+    setChatMessages(session.messages);
+    setShowHistory(false);
+    setShowChat(true);
+  };
+
+  // Delete a chat session from history
+  const deleteChatFromHistory = (sessionId) => {
+    setChatHistory(prev => prev.filter(session => session.id !== sessionId));
+  };
+
+  // Handle AI Chat submission
+  const handleChatSubmit = async (e) => {
+    e.preventDefault();
+    if (!chatInput.trim() || isChatLoading) return;
+
+    const userMessage = chatInput.trim();
+    setChatInput('');
+    
+    // Add user message to chat
+    setChatMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setIsChatLoading(true);
+
+    try {
+      // Prepare patient context with initial information AND analysis results
+      const patientContext = `
+Initial Patient Information:
+- Gender: ${gender || 'Not specified'}
+- Age: ${age || 'Not specified'}
+- Duration of symptoms: ${duration || 'Not specified'}
+- Severity Level: ${severity || 'Not specified'}
+- Chief Complaint: ${userInput || 'Not specified'}
+
+Analysis Results:
+${analysisData ? JSON.stringify(analysisData, null, 2) : 'Not available'}
+
+Follow-up Question: ${userMessage}
+
+Please provide a detailed medical response considering the patient's context and analysis results above.
+      `.trim();
+
+      console.log('Sending chat request with context:', patientContext); // Debug log
+
+      const response = await fetch('http://localhost:5000/api/v1/symptom/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          context: {
+            gender: gender || 'Not specified',
+            age: age || 'Not specified',
+            duration: duration || 'Not specified',
+            severity: severity || 'Not specified',
+            chiefComplaint: userInput || 'Not specified',
+            analysisResults: analysisData
+          }
+        })
+      });
+
+      const data = await response.json();
+      
+      console.log('Chat API Response:', data); // Debug log
+      
+      if (data.success) {
+        // Add AI response to chat
+        const updatedMessages = [...chatMessages, 
+          { role: 'user', content: userMessage },
+          { role: 'assistant', content: data.data.response }
+        ];
+        setChatMessages(updatedMessages);
+      } else {
+        console.error('Chat API Error:', data.error); // Debug log
+        const updatedMessages = [...chatMessages,
+          { role: 'user', content: userMessage },
+          { role: 'assistant', content: data.error || 'Sorry, I encountered an error. Please try again.' }
+        ];
+        setChatMessages(updatedMessages);
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      setChatMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'Sorry, I could not connect to the AI service.' 
+      }]);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
   return (
     <div className="app-shell">
       <div className="canvas-wrapper">
         <span className="overlay-label">Dr. AI — The Future of Healthcare</span>
         
-        {/* Patient Info Panel - Only show on initial form */}
-        {showInitialForm && (
+        {/* Patient Info Panel - Only show on initial form and when no analysis data */}
+        {showInitialForm && !analysisData && (
           <div className="info-panel">
             <h3 className="info-panel-title">Patient Information</h3>
             
@@ -549,19 +676,24 @@ Analyze the patient data and generate ONLY in JSON format THAT GIVEN. Do not pro
           </div>
         )}
         
-        {/* Initial Input Section */}
-        {showInitialForm && (
+        {/* Initial Input Section - Only show when no analysis data */}
+        {showInitialForm && !analysisData && (
           <div className="input-container">
             <form onSubmit={handleSubmit} className="symptom-form">
               <div className="input-group">
-                <textarea
-                  className="symptom-input"
-                  placeholder="Describe your symptoms or health concerns here..."
-                  value={userInput}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  rows={1}
-                />
+                <div className="textarea-wrapper">
+                  <textarea
+                    className="symptom-input"
+                    placeholder="Describe your symptoms or health concerns here..."
+                    value={userInput}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                    rows={1}
+                  />
+                  <div className="input-disclaimer">
+                      Educational purposes only - Consult a healthcare professional
+                  </div>
+                </div>
                 <button 
                   type="submit" 
                   className="submit-btn"
@@ -620,7 +752,133 @@ Analyze the patient data and generate ONLY in JSON format THAT GIVEN. Do not pro
           </div>
         )} */}
 
-        <WorkspacePlane />
+        {/* AI Chat Interface - appears in center like initial form */}
+        {showChat && (
+          <div className="input-container">
+            <form onSubmit={handleChatSubmit} className="symptom-form">
+              <div className="input-group">
+                <div className="textarea-wrapper">
+                  <textarea
+                    className="symptom-input"
+                    placeholder="Ask me anything about health..."
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    disabled={isChatLoading}
+                    rows={1}
+                  />
+                  <div className="input-disclaimer">
+                     Educational purposes only - Consult a healthcare professional
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button 
+                    type="submit" 
+                    className="submit-btn"
+                    disabled={isChatLoading || !chatInput.trim()}
+                  >
+                    {isChatLoading ? "Thinking..." : "Ask AI"}
+                  </button>
+                  <button 
+                    type="button"
+                    className="submit-btn"
+                    onClick={() => setShowHistory(true)}
+                    style={{ minWidth: '100px' }}
+                  >
+                    History
+                  </button>
+                </div>
+              </div>
+              
+              {/* Chat Messages Display */}
+              {chatMessages.length > 0 && (
+                <div className="response-box">
+                  <div className="chat-messages-list">
+                    {chatMessages.map((msg, index) => (
+                      <div key={index} className={`chat-message-item ${msg.role}`}>
+                        <div className="message-label">
+                          {msg.role === 'user' ? 'You:' : 'AI Doctor:'}
+                        </div>
+                        <div className="message-text">
+                          {msg.content}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <button 
+                    type="button"
+                    className="reset-btn"
+                    onClick={() => {
+                      saveChatToHistory();
+                      setShowChat(false);
+                      setChatMessages([]);
+                      setChatInput('');
+                    }}
+                    style={{ marginTop: '10px', width: '100%' }}
+                  >
+                    Close Chat
+                  </button>
+                </div>
+              )}
+            </form>
+          </div>
+        )}
+
+        {/* Chat History Modal */}
+        {showHistory && (
+          <div className="modal-overlay" onClick={() => setShowHistory(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h2>Chat History</h2>
+              {chatHistory.length === 0 ? (
+                <p style={{ textAlign: 'center', color: '#94a3b8', padding: '2rem' }}>
+                  No chat history available
+                </p>
+              ) : (
+                <div className="history-list">
+                  {chatHistory.map((session) => (
+                    <div key={session.id} className="history-item">
+                      <div className="history-header">
+                        <div>
+                          <div className="history-timestamp">{session.timestamp}</div>
+                          <div className="history-info">
+                            {session.patientInfo.chiefComplaint} - {session.patientInfo.gender}, {session.patientInfo.age}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <button
+                            className="submit-btn"
+                            onClick={() => loadChatFromHistory(session)}
+                            style={{ padding: '5px 15px', fontSize: '14px' }}
+                          >
+                            Resume
+                          </button>
+                          <button
+                            className="reset-btn"
+                            onClick={() => deleteChatFromHistory(session.id)}
+                            style={{ padding: '5px 15px', fontSize: '14px' }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                      <div className="history-preview">
+                        {session.messages.length} messages
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <button
+                className="reset-btn"
+                onClick={() => setShowHistory(false)}
+                style={{ marginTop: '20px', width: '100%' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+
+        <WorkspacePlane selectedSection={selectedSection} hasAnalysisData={!!analysisData} />
       </div>
 
       {/* Left Sidebar - Navigation Menu */}
@@ -687,6 +945,29 @@ Analyze the patient data and generate ONLY in JSON format THAT GIVEN. Do not pro
             style={{ cursor: analysisData ? 'pointer' : 'not-allowed', opacity: analysisData ? 1 : 0.5 }}
           >
             <div className="sidebar-item-value">Dietary Recommendations</div>
+          </div>
+
+          <div 
+            className={`sidebar-item ${!analysisData ? 'disabled' : ''} ${selectedSection === 'exercise' ? 'active' : ''}`}
+            onClick={() => analysisData && setSelectedSection('exercise')}
+            style={{ cursor: analysisData ? 'pointer' : 'not-allowed', opacity: analysisData ? 1 : 0.5 }}
+          >
+            <div className="sidebar-item-value">Breathe n' Flow</div>
+          </div>
+
+          {/* Chat with AI Button */}
+          <div 
+            className={`sidebar-item ${!analysisData ? 'disabled' : ''} ${showChat ? 'active' : ''}`}
+            onClick={() => analysisData && setShowChat(!showChat)}
+            style={{ 
+              cursor: analysisData ? 'pointer' : 'not-allowed',
+              opacity: analysisData ? 1 : 0.5,
+              marginTop: '1rem',
+              borderTop: '1px solid rgba(94, 234, 212, 0.2)',
+              paddingTop: '1rem'
+            }}
+          >
+            <div className="sidebar-item-value">💬 Chat with AI</div>
           </div>
         </div>
       </Sidebar>
@@ -830,6 +1111,68 @@ Analyze the patient data and generate ONLY in JSON format THAT GIVEN. Do not pro
                   <p>{analysisData.treatment_recommendations.dietary_recommendations.eating_patterns}</p>
                 </div>
               )}
+            </div>
+          ) : selectedSection === 'exercise' ? (
+            <div style={{ padding: '1rem', color: '#e2e8f0' }}>
+              <h3 style={{ color: '#5eead4', marginBottom: '1.5rem' }}>Breathe n' Flow</h3>
+              
+              {/* Cat-Cow Pose */}
+              <div style={{ marginBottom: '2rem' }}>
+                <h4 style={{ color: '#5eead4', marginBottom: '0.5rem' }}>1. Cat-Cow Pose</h4>
+                <p style={{ marginBottom: '1rem', color: '#94a3b8' }}>
+                  This yoga exercise helps relieve neck and back tension.
+                </p>
+                <ExerciseModel />
+                <div style={{ 
+                  marginTop: '1rem',
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  border: '1px solid rgba(94, 234, 212, 0.2)',
+                  borderRadius: '8px',
+                  padding: '1rem'
+                }}>
+                  <h5 style={{ color: '#5eead4', marginBottom: '0.5rem' }}>Instructions:</h5>
+                  <p>• Start on hands and knees in a tabletop position</p>
+                  <p>• Inhale: Arch your back (Cow pose), lift chest and tailbone</p>
+                  <p>• Exhale: Round your spine (Cat pose), tuck chin to chest</p>
+                  <p>• Repeat 5-10 times slowly and mindfully</p>
+                </div>
+              </div>
+
+              {/* Tiger Woods Yoga */}
+              <div style={{ marginBottom: '1rem' }}>
+                <h4 style={{ color: '#5eead4', marginBottom: '0.5rem' }}>2. Professional Yoga Movement</h4>
+                <p style={{ marginBottom: '1rem', color: '#94a3b8' }}>
+                  Advanced yoga technique for flexibility and balance.
+                </p>
+                <TigerWoodsYogaModel />
+                <div style={{ 
+                  marginTop: '1rem',
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  border: '1px solid rgba(94, 234, 212, 0.2)',
+                  borderRadius: '8px',
+                  padding: '1rem'
+                }}>
+                  <h5 style={{ color: '#5eead4', marginBottom: '0.5rem' }}>Instructions:</h5>
+                  <p>• Watch the demonstration carefully</p>
+                  <p>• Focus on proper form and alignment</p>
+                  <p>• Move slowly and with control</p>
+                  <p>• Breathe naturally throughout the movement</p>
+                </div>
+              </div>
+
+              {/* Safety Warning */}
+              <div style={{ 
+                marginTop: '1.5rem',
+                background: 'rgba(251, 191, 36, 0.1)',
+                border: '1px solid rgba(251, 191, 36, 0.3)',
+                borderRadius: '8px',
+                padding: '1rem'
+              }}>
+                <p style={{ color: '#fbbf24', fontWeight: 'bold' }}>⚠️ Safety Reminder</p>
+                <p style={{ marginTop: '0.5rem' }}>• Stop if you feel any pain or discomfort</p>
+                <p>• Consult a healthcare professional before starting new exercises</p>
+                <p>• These demonstrations are for educational purposes only</p>
+              </div>
             </div>
           ) : (
             <div className="sidebar-item">

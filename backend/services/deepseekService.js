@@ -138,6 +138,32 @@ class DeepSeekService {
 
     const systemPrompt = `You are a helpful AI medical assistant. Provide accurate, helpful medical information while always emphasizing the importance of consulting healthcare professionals. Be compassionate and clear.`;
 
+    // Format context information if provided
+    let userMessage = message;
+    if (context && Object.keys(context).length > 0) {
+      let contextInfo = `
+Patient Context:
+- Gender: ${context.gender || 'Not specified'}
+- Age: ${context.age || 'Not specified'}
+- Duration: ${context.duration || 'Not specified'}
+- Severity: ${context.severity || 'Not specified'}
+- Chief Complaint: ${context.chiefComplaint || 'Not specified'}
+`;
+
+      // Add analysis results if available
+      if (context.analysisResults) {
+        contextInfo += `
+Previous Analysis Results:
+${JSON.stringify(context.analysisResults, null, 2)}
+`;
+      }
+
+      contextInfo += `
+Question: ${message}
+      `.trim();
+      userMessage = contextInfo;
+    }
+
     try {
       const requestData = {
         model: this.model,
@@ -148,7 +174,7 @@ class DeepSeekService {
           },
           {
             role: 'user',
-            content: message
+            content: userMessage
           }
         ],
         temperature: 0.7,

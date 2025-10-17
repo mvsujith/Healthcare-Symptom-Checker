@@ -85,13 +85,6 @@ export default function DynamicQuestionForm({ questions, onSubmit }) {
   const questionData = questions.questions || questions;
   const { multiple_choice = [], text_and_numbers = [], documents_and_scans = [] } = questionData;
 
-  // Debug logging
-  console.log('📋 DynamicQuestionForm - Question counts:');
-  console.log('  - Multiple choice:', multiple_choice.length);
-  console.log('  - Text and numbers:', text_and_numbers.length);
-  console.log('  - Documents:', documents_and_scans.length);
-  console.log('  - Text questions:', text_and_numbers);
-
   return (
     <div className="dynamic-form-container">
       {/* Interview Phase Title */}

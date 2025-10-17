@@ -141,6 +141,20 @@
   color: #e2e8f0;
 }
 
+/* Sidebar Disclaimer */
+.sidebar-disclaimer {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 1.25rem;
+  color: #fbbf24;
+  font-size: 0.75rem;
+  text-align: center;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
 /* Custom Scrollbar */
 .sidebar-content::-webkit-scrollbar {
   width: 8px;

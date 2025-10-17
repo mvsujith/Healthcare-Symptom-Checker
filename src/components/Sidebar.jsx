@@ -74,6 +74,9 @@ export default function Sidebar({ position = 'left', title = 'Panel', children }
       {/* Content Area */}
       {!isMinimized && (
         <div className="sidebar-content">
+          <div className="sidebar-disclaimer">
+              Educational Purpose Only - Consult a Healthcare Professional
+          </div>
           {children}
         </div>
       )}
