@@ -1,6 +1,8 @@
 # 🏥 Healthcare Symptom Checker - AI-Powered Medical Analysis System
 
 > **Assignment Submission**
+> <img width="1919" height="1079" alt="Screenshot 2025-10-17 223437" src="https://github.com/user-attachments/assets/fe9bbcec-2793-4bbc-8c42-32517b0421da" />
+
 >
 > **[Watch Project Video](https://drive.google.com/file/d/1VboURzWNDOlasm5j70r1lI4vcRrwbjwX/view?usp=drive_link)**
 
@@ -451,6 +453,7 @@ For questions about this assignment submission:
 ---
 
 **Thank you for reviewing this assignment submission!** 🚀
+
 
 
 
