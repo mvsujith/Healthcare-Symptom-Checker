@@ -1,6 +1,6 @@
 # 🏥 Healthcare Symptom Checker - AI-Powered Medical Analysis System
 
-> **Assignment Submission**
+> **Sujith**
 > <img width="1919" height="1079" alt="Screenshot 2025-10-17 223437" src="https://github.com/user-attachments/assets/fe9bbcec-2793-4bbc-8c42-32517b0421da" />
 
 >
@@ -423,12 +423,6 @@ While this is an assignment submission, contributions are welcome for learning p
 
 ---
 
-## 📄 License
-
-This project is created as an assignment submission. Code is available for review and educational purposes.
-
----
-
 ## 🙏 Acknowledgments
 
 - **DeepSeek AI** - Advanced reasoning capabilities
@@ -452,7 +446,8 @@ For questions about this assignment submission:
 
 ---
 
-**Thank you for reviewing this assignment submission!** 🚀
+**Thank you** 
+
 
 
 
