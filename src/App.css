@@ -32,16 +32,20 @@
   position: absolute;
   top: 24px;
   left: 32px;
-  padding: 0.35rem 0.75rem;
-  background: rgba(94, 234, 212, 0.1);
+  padding: 0.45rem 1rem;
+  background: linear-gradient(135deg, rgba(94, 234, 212, 0.15) 0%, rgba(94, 234, 212, 0.08) 100%);
   color: #5eead4;
   font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   border-radius: 999px;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(94, 234, 212, 0.45);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(94, 234, 212, 0.4);
   z-index: 10;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 
+              0 0 30px rgba(94, 234, 212, 0.2);
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(94, 234, 212, 0.5);
 }
 
 /* Patient Info Panel */
@@ -51,11 +55,12 @@
   right: 32px;
   width: 280px;
   padding: 1.5rem;
-  background: rgba(15, 23, 42, 0.9);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.88) 100%);
   border: 1px solid rgba(94, 234, 212, 0.3);
   border-radius: 16px;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 
+              0 0 60px rgba(94, 234, 212, 0.08);
   z-index: 10;
   color-scheme: dark;
 }
@@ -65,10 +70,15 @@
   font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   margin-bottom: 1.25rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(94, 234, 212, 0.2);
+  padding-bottom: 0.875rem;
+  border-bottom: 2px solid transparent;
+  background: linear-gradient(90deg, rgba(94, 234, 212, 0.3) 0%, transparent 100%);
+  background-position: bottom;
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  text-shadow: 0 0 15px rgba(94, 234, 212, 0.4);
 }
 
 .info-field {
@@ -112,9 +122,10 @@
 .info-select:focus {
   outline: none !important;
   border-color: #5eead4 !important;
-  background: rgba(15, 23, 42, 0.95) !important;
-  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.15),
-              0 2px 12px rgba(0, 0, 0, 0.3) !important;
+  background: rgba(15, 23, 42, 0.98) !important;
+  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.18),
+              0 2px 15px rgba(0, 0, 0, 0.3),
+              inset 0 0 20px rgba(94, 234, 212, 0.08) !important;
 }
 
 .info-input::placeholder {
@@ -296,8 +307,10 @@
 .symptom-input:focus {
   outline: none;
   border-color: #5eead4;
-  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.1),
-              0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.15),
+              0 4px 20px rgba(0, 0, 0, 0.3),
+              inset 0 0 30px rgba(94, 234, 212, 0.05);
+  background: rgba(15, 23, 42, 0.95);
 }
 
 .symptom-input::placeholder {
@@ -345,25 +358,43 @@
   font-size: 0.95rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3), 
+              0 0 30px rgba(56, 189, 248, 0.1);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 25px rgba(56, 189, 248, 0.45), 
+              0 0 40px rgba(56, 189, 248, 0.2);
+}
+
+.submit-btn:hover:not(:disabled)::before {
+  opacity: 1;
 }
 
 .submit-btn:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translateY(-1px) scale(1);
 }
 
 .submit-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.2);
 }
 
 /* Response Box */
